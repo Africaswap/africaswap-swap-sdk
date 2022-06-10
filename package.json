@@ -1,16 +1,16 @@
 {
-  "name": "@pancakeswap/sdk",
+  "name": "@africaswap/sdk",
   "license": "MIT",
-  "version": "2.4.3",
-  "description": "🛠 An SDK for building applications on top of Pancakeswap.",
+  "version": "1.0.20",
+  "description": "🛠 An SDK for building applications on top of Africaswap.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "repository": "https://github.com/pancakeswap/pancake-swap-sdk.git",
+  "repository": "https://github.com/Africaswap/africaswap-swap-sdk",
   "keywords": [
-    "pancakeswap",
+    "africaswap",
     "bsc"
   ],
   "module": "dist/sdk.esm.js",
