@@ -1,14 +1,17 @@
 {
   "name": "@africaswap/sdk",
   "license": "MIT",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "🛠 An SDK for building applications on top of Africaswap.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "repository": "https://github.com/Africaswap/africaswap-swap-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Africaswap/africaswap-swap-sdk.git"
+  },
   "keywords": [
     "africaswap",
     "bsc"
@@ -54,5 +57,13 @@
     "printWidth": 120,
     "semi": false,
     "singleQuote": true
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/Africaswap/africaswap-swap-sdk/issues"
+  },
+  "homepage": "https://github.com/Africaswap/africaswap-swap-sdk#readme",
+  "directories": {
+    "test": "test"
+  },
+  "author": "Rafiki"
 }
