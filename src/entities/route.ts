@@ -17,8 +17,10 @@ export class Route {
     invariant(pairs.length > 0, 'PAIRS')
     invariant(
       pairs.every(pair => pair.chainId === pairs[0].chainId),
-      'CHAIN_IDS'
+      'CHAIN_IDS2' 
     )
+    
+    
     invariant(
       (input instanceof Token && pairs[0].involvesToken(input)) ||
         (input === ETHER && pairs[0].involvesToken(WETH[pairs[0].chainId])),
