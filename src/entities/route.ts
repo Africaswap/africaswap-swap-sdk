@@ -1,4 +1,4 @@
-import { ChainId } from '../constants'
+import { ChainId, ExtendType } from '../constants'
 import invariant from 'tiny-invariant'
 
 import { Currency, ETHER } from './currency'
@@ -12,6 +12,7 @@ export class Route {
   public readonly input: Currency
   public readonly output: Currency
   public readonly midPrice: Price
+  public readonly isExtended: Boolean
 
   public constructor(pairs: Pair[], input: Currency, output?: Currency) {
     invariant(pairs.length > 0, 'PAIRS')
@@ -46,6 +47,7 @@ export class Route {
     this.midPrice = Price.fromRoute(this)
     this.input = input
     this.output = output ?? path[path.length - 1]
+    this.isExtended = !pairs.every(pair => pair.extendType === ExtendType.AFRICA)
   }
 
   public get chainId(): ChainId {

@@ -88,7 +88,7 @@ export abstract class Router {
       'ttl' in options
         ? `0x${(Math.floor(new Date().getTime() / 1000) + options.ttl).toString(16)}`
         : `0x${options.deadline.toString(16)}`
-
+    const factoryNames: string[] = trade.route.pairs.map((pair) => pair.extendType)
     const useFeeOnTransfer = Boolean(options.feeOnTransfer)
 
     let methodName: string
@@ -99,19 +99,19 @@ export abstract class Router {
         if (etherIn) {
           methodName = useFeeOnTransfer ? 'swapExactETHForTokensSupportingFeeOnTransferTokens' : 'swapExactETHForTokens'
           // (uint amountOutMin, address[] calldata path, address to, uint deadline)
-          args = [amountOut, path, to, deadline]
+          args = trade.isExtended ? [amountOut, path, factoryNames, to, deadline] : [amountOut, path, to, deadline];
           value = amountIn
         } else if (etherOut) {
           methodName = useFeeOnTransfer ? 'swapExactTokensForETHSupportingFeeOnTransferTokens' : 'swapExactTokensForETH'
           // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-          args = [amountIn, amountOut, path, to, deadline]
+          args = trade.isExtended ? [amountIn, amountOut, path, factoryNames, to, deadline] : [amountIn, amountOut, path, to, deadline];
           value = ZERO_HEX
         } else {
           methodName = useFeeOnTransfer
             ? 'swapExactTokensForTokensSupportingFeeOnTransferTokens'
             : 'swapExactTokensForTokens'
           // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-          args = [amountIn, amountOut, path, to, deadline]
+          args = trade.isExtended ? [amountIn, amountOut, path, factoryNames, to, deadline] : [amountIn, amountOut, path, to, deadline];
           value = ZERO_HEX
         }
         break
@@ -120,17 +120,17 @@ export abstract class Router {
         if (etherIn) {
           methodName = 'swapETHForExactTokens'
           // (uint amountOut, address[] calldata path, address to, uint deadline)
-          args = [amountOut, path, to, deadline]
+          args = trade.isExtended ? [amountOut, path, factoryNames, to, deadline] : [amountOut, path, to, deadline]
           value = amountIn
         } else if (etherOut) {
           methodName = 'swapTokensForExactETH'
           // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-          args = [amountOut, amountIn, path, to, deadline]
+          args = trade.isExtended ? [amountOut, amountIn, path, factoryNames, to, deadline] : [amountOut, amountIn, path, to, deadline]
           value = ZERO_HEX
         } else {
           methodName = 'swapTokensForExactTokens'
           // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-          args = [amountOut, amountIn, path, to, deadline]
+          args = trade.isExtended ? [amountOut, amountIn, path, factoryNames, to, deadline] : [amountOut, amountIn, path, to, deadline]
           value = ZERO_HEX
         }
         break
@@ -138,7 +138,7 @@ export abstract class Router {
     return {
       methodName,
       args,
-      value,
+      value
     }
   }
 }

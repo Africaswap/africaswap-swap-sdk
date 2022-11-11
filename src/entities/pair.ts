@@ -15,7 +15,8 @@ import {
   FIVE,
   FEES_NUMERATOR,
   FEES_DENOMINATOR,
-  ChainId
+  ChainId,
+  ExtendType
 } from '../constants'
 import { sqrt, parseBigintIsh } from '../utils'
 import { InsufficientReservesError, InsufficientInputAmountError } from '../errors'
@@ -23,25 +24,26 @@ import { Token } from './token'
 
 let PAIR_ADDRESS_CACHE: { [key: string]: string } = {}
 
-const composeKey = (token0: Token, token1: Token) => `${token0.chainId}-${token0.address}-${token1.address}`
+const composeKey = (token0: Token, token1: Token, extendType: ExtendType) => `${token0.chainId}-${token0.address}-${token1.address}-${extendType}`
 
 export class Pair {
   public readonly liquidityToken: Token
   private readonly tokenAmounts: [TokenAmount, TokenAmount]
+  public readonly extendType: ExtendType
 
-  public static getAddress(tokenA: Token, tokenB: Token): string {
-    console.log("getAddress")
+  public static getAddress(tokenA: Token, tokenB: Token, extendType: ExtendType = ExtendType.AFRICA): string {
+
     const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA] // does safety checks
 
-    const key = composeKey(token0, token1)
+    const key = composeKey(token0, token1, extendType)
 
     if (PAIR_ADDRESS_CACHE?.[key] === undefined) {
       PAIR_ADDRESS_CACHE = {
         ...PAIR_ADDRESS_CACHE,
         [key]: getCreate2Address(
-          FACTORY_ADDRESS_MAP[token0.chainId],
+          FACTORY_ADDRESS_MAP[extendType][token0.chainId],
           keccak256(['bytes'], [pack(['address', 'address'], [token0.address, token1.address])]),
-          INIT_CODE_HASH_MAP[token0.chainId]
+          INIT_CODE_HASH_MAP[extendType][token0.chainId]
         )
       }
     }
@@ -49,8 +51,7 @@ export class Pair {
     return PAIR_ADDRESS_CACHE[key]
   }
 
-  public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount) {
-    console.log("tokenAmounts")
+  public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, extendType: ExtendType = ExtendType.AFRICA) {
     const tokenAmounts = tokenAmountA.token.sortsBefore(tokenAmountB.token) // does safety checks
       ? [tokenAmountA, tokenAmountB]
       : [tokenAmountB, tokenAmountA]
@@ -62,6 +63,7 @@ export class Pair {
       'Africaswap LPs'
     )
     this.tokenAmounts = tokenAmounts as [TokenAmount, TokenAmount]
+    this.extendType = extendType;
   }
 
   /**

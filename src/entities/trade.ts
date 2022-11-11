@@ -57,9 +57,19 @@ export function inputOutputComparator(a: InputOutput, b: InputOutput): number {
     }
   }
 }
-
+export function extendedComparator(a: Trade, b: Trade) {
+  if (a.isExtended == b.isExtended) {
+    return 0;
+  } else {
+    return a.isExtended ? 1 : -1;
+  }
+}
 // extension of the input output comparator that also considers other dimensions of the trade in ranking them
 export function tradeComparator(a: Trade, b: Trade) {
+  const extendComp = extendedComparator(a, b);
+  if (extendComp !== 0) {
+    return extendComp;
+  }
   const ioComp = inputOutputComparator(a, b)
   if (ioComp !== 0) {
     return ioComp
@@ -134,6 +144,8 @@ export class Trade {
    */
   public readonly priceImpact: Percent
 
+  public readonly isExtended: Boolean
+
   /**
    * Constructs an exact in trade with the given amount in and route
    * @param route route of the exact in trade
@@ -197,6 +209,7 @@ export class Trade {
     )
     this.nextMidPrice = Price.fromRoute(new Route(nextPairs, route.input))
     this.priceImpact = computePriceImpact(route.midPrice, this.inputAmount, this.outputAmount)
+    this.isExtended = route.isExtended;
   }
 
   /**
