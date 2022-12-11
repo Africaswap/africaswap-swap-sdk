@@ -64,8 +64,31 @@ export function extendedComparator(a: Trade, b: Trade) {
     return a.isExtended ? 1 : -1;
   }
 }
+
+function checkPathDuplication(a: Trade) {
+  const path = a.route.path;
+  for (let i = 0; i < path.length - 1; i++) {
+    for (let j = i + 1; j < path.length; j++) {
+      if (path[i].equals(path[j])) return true;
+    }
+  }
+  return false;
+}
+
+function pathDuplicationCompare(a: Trade, b: Trade) {
+  if (checkPathDuplication(a) === checkPathDuplication(b)) {
+    return 0;
+  } else {
+    return checkPathDuplication(a) ? 1 : -1;
+  }
+}
+
 // extension of the input output comparator that also considers other dimensions of the trade in ranking them
 export function tradeComparator(a: Trade, b: Trade) {
+  const pathDuplicationComp = pathDuplicationCompare(a, b);
+  if (pathDuplicationComp !== 0) {
+    return pathDuplicationComp;
+  }
   const extendComp = extendedComparator(a, b);
   if (extendComp !== 0) {
     return extendComp;
@@ -193,14 +216,14 @@ export class Trade {
       tradeType === TradeType.EXACT_INPUT
         ? amount
         : route.input === ETHER
-        ? CurrencyAmount.ether(amounts[0].raw)
-        : amounts[0]
+          ? CurrencyAmount.ether(amounts[0].raw)
+          : amounts[0]
     this.outputAmount =
       tradeType === TradeType.EXACT_OUTPUT
         ? amount
         : route.output === ETHER
-        ? CurrencyAmount.ether(amounts[amounts.length - 1].raw)
-        : amounts[amounts.length - 1]
+          ? CurrencyAmount.ether(amounts[amounts.length - 1].raw)
+          : amounts[amounts.length - 1]
     this.executionPrice = new Price(
       this.inputAmount.currency,
       this.outputAmount.currency,
@@ -278,8 +301,8 @@ export class Trade {
       currencyAmountIn instanceof TokenAmount
         ? currencyAmountIn.token.chainId
         : currencyOut instanceof Token
-        ? currencyOut.chainId
-        : undefined
+          ? currencyOut.chainId
+          : undefined
     invariant(chainId !== undefined, 'CHAIN_ID')
 
     const amountIn = wrappedAmount(currencyAmountIn, chainId)
@@ -366,8 +389,8 @@ export class Trade {
       currencyAmountOut instanceof TokenAmount
         ? currencyAmountOut.token.chainId
         : currencyIn instanceof Token
-        ? currencyIn.chainId
-        : undefined
+          ? currencyIn.chainId
+          : undefined
     invariant(chainId !== undefined, 'CHAIN_ID')
 
     const amountOut = wrappedAmount(currencyAmountOut, chainId)
